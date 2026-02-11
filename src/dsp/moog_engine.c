@@ -93,50 +93,68 @@ static float generate_osc(moog_wave_t wave, double counter, double period) {
 }
 
 /* ===================================================================
- * Moog ladder filter
- * Based on equalizer.c from RaffoSynth, enhanced with proper
- * Moog-style 4-pole ladder resonance
+ * Simplified Moog Ladder Filter
+ * Based on simplified model from MoogLadders collection
+ * From: https://github.com/ddiakopoulos/MoogLadders
+ *
+ * Features:
+ * - 4-pole ladder with tanh nonlinearity
+ * - Gain compensation for consistent volume across resonance
+ * - Simpler math than Huovilainen, more stable
  * =================================================================== */
 
-static void moog_filter_process(float *output, float *prev, int frames,
-                                float cutoff_hz, float resonance,
-                                float sample_rate) {
-    /* Compute filter coefficients for 4-pole Moog ladder filter */
-    float fc = cutoff_hz / sample_rate;
-    if (fc > 0.49f) fc = 0.49f;
-    if (fc < 0.001f) fc = 0.001f;
+#define MOOG_PI 3.14159265358979323846
+#define GAIN_COMPENSATION 0.5
 
-    float f = fc * 1.16f;
-    float fb = resonance * (1.0f - 0.15f * f * f);
+/* Prevent denormals */
+static inline double snap_to_zero(double x) {
+    return (fabs(x) < 1e-15) ? 0.0 : x;
+}
 
-    float b0 = prev[0];
-    float b1 = prev[1];
-    float b2 = prev[2];
-    float b3 = prev[3];
-    float b4 = prev[4];
+/* Update filter coefficients when cutoff changes */
+static void simplified_moog_set_cutoff(moog_engine_t *engine, float cutoff_hz) {
+    double fs = (double)engine->sample_rate;
+    double g = (2.0 * MOOG_PI) * cutoff_hz / fs;
+    g *= MOOG_PI / 1.3;
+    engine->filter_g = g;
+    engine->filter_h = g / 1.3;
+    engine->filter_h0 = g * 0.3 / 1.3;
+}
 
-    for (int i = 0; i < frames; i++) {
-        float input = output[i] - b4 * fb;
-        input *= 0.35013f * f * f * f * f;
+/* Process a single sample through the Simplified Moog ladder */
+static inline float simplified_moog_process_sample(moog_engine_t *engine, float input_sample, float resonance) {
+    double *stage = engine->filter_stage;
+    double *stageZ1 = engine->filter_stageZ1;
+    double *stageTanh = engine->filter_stageTanh;
+    double g = engine->filter_g;
+    double h = engine->filter_h;
+    double h0 = engine->filter_h0;
+    double output = engine->filter_output;
 
-        b1 = input + 0.3f * b0 + (1.0f - f) * b1;
-        b0 = input;
-        b2 = b1 + 0.3f * b1 + (1.0f - f) * b2;
-        b3 = b2 + 0.3f * b2 + (1.0f - f) * b3;
-        b4 = b3 + 0.3f * b3 + (1.0f - f) * b4;
+    double input;
 
-        /* Clamp to prevent blowup */
-        if (b4 > 4.0f) b4 = 4.0f;
-        if (b4 < -4.0f) b4 = -4.0f;
-
-        output[i] = b4;
+    for (int stageIdx = 0; stageIdx < 4; stageIdx++) {
+        if (stageIdx) {
+            /* Stages 1-3: cascade from previous stage */
+            input = stage[stageIdx - 1];
+            stageTanh[stageIdx - 1] = tanh(input);
+            double tanhVal = (stageIdx != 3) ? stageTanh[stageIdx] : tanh(stageZ1[stageIdx]);
+            stage[stageIdx] = (h * stageZ1[stageIdx] + h0 * stageTanh[stageIdx - 1])
+                            + (1.0 - g) * tanhVal;
+        } else {
+            /* Stage 0: input with resonance feedback */
+            input = (double)input_sample - ((4.0 * resonance) * (output - GAIN_COMPENSATION * input_sample));
+            stage[stageIdx] = (h * tanh(input) + h0 * stageZ1[stageIdx])
+                            + (1.0 - g) * stageTanh[stageIdx];
+        }
+        stageZ1[stageIdx] = stage[stageIdx];
     }
 
-    prev[0] = b0;
-    prev[1] = b1;
-    prev[2] = b2;
-    prev[3] = b3;
-    prev[4] = b4;
+    output = stage[3];
+    output = snap_to_zero(output);
+    engine->filter_output = output;
+
+    return (float)output;
 }
 
 /* ===================================================================
@@ -153,6 +171,9 @@ static float envelope_process(moog_env_state_t *state, float *level,
     double atk_time  = param_to_time(attack, sample_rate);
     double dec_time  = param_to_time(decay, sample_rate);
     double rel_time  = param_to_time(release, sample_rate);
+
+    /* Square sustain to match original RaffoSynth behavior */
+    float sus_squared = sustain * sustain;
 
     switch (*state) {
         case ENV_ATTACK: {
@@ -173,30 +194,28 @@ static float envelope_process(moog_env_state_t *state, float *level,
         case ENV_DECAY: {
             double progress = *env_counter / dec_time;
             if (progress >= 1.0) {
-                *level = sustain;
+                *level = sus_squared;
                 *state = ENV_SUSTAIN;
                 *env_counter = 0;
             } else {
                 /* Quadratic decay curve */
                 float p = (float)(1.0 - progress);
-                *level = sustain + (1.0f - sustain) * p * p;
+                *level = sus_squared + (1.0f - sus_squared) * p * p;
             }
             (*env_counter)++;
             break;
         }
         case ENV_SUSTAIN:
-            *level = sustain;
+            *level = sus_squared;
             break;
         case ENV_RELEASE: {
-            double progress = *env_counter / rel_time;
-            if (progress >= 1.0) {
+            /* Exponential release decay like original RaffoSynth */
+            double decay_rate = exp(-5.0 / rel_time);  /* ~60dB decay over rel_time */
+            *level = *release_level * (float)pow(decay_rate, *env_counter);
+            if (*level < 0.0001f) {
                 *level = 0.0f;
                 *state = ENV_OFF;
                 *env_counter = 0;
-            } else {
-                /* Quadratic release curve from captured start level */
-                float p = (float)(1.0 - progress);
-                *level = *release_level * p * p;
             }
             (*env_counter)++;
             break;
@@ -288,7 +307,12 @@ void moog_engine_reset(moog_engine_t *engine) {
     engine->current_note = -1;
     engine->key_stack_count = 0;
     engine->counter = 0;
-    memset(engine->filter_prev, 0, sizeof(engine->filter_prev));
+    memset(engine->filter_stage, 0, sizeof(engine->filter_stage));
+    memset(engine->filter_stageTanh, 0, sizeof(engine->filter_stageTanh));
+    memset(engine->filter_delay, 0, sizeof(engine->filter_delay));
+    engine->filter_tune = 0;
+    engine->filter_acr = 1.0;
+    engine->filter_resQuad = 0;
     memset(engine->last_val, 0, sizeof(engine->last_val));
 }
 
@@ -504,9 +528,8 @@ void moog_engine_render(moog_engine_t *engine, float *output, int frames) {
         /* Apply amplitude envelope and velocity */
         sample *= amp_env * vel_scale;
 
-        /* Per-sample filter processing for smooth envelope tracking */
+        /* Per-sample filter with envelope modulation */
         {
-            /* Filter cutoff with per-sample envelope modulation */
             float base_cutoff = engine->filter_cutoff;
             float filt_env_mod = filt_env * engine->filter_contour;
 
@@ -516,36 +539,18 @@ void moog_engine_render(moog_engine_t *engine, float *output, int frames) {
                 key_track = (engine->current_note - 60) / 127.0f * engine->filter_key_follow;
             }
 
-            /* LFO filter modulation (lfo_val already computed above) */
+            /* LFO filter modulation */
             float lfo_filt = lfo_val * engine->lfo_depth_filter * engine->mod_to_filter * 0.3f;
 
             float cutoff_normalized = clampf(base_cutoff + filt_env_mod + key_track + lfo_filt, 0.0f, 1.0f);
 
-            /* Map normalized cutoff to Hz (exponential: 20Hz to 20kHz) */
-            float cutoff_hz = 20.0f * powf(1000.0f, cutoff_normalized);
+            /* Map 0-1 to Hz (exponential: 20Hz to 18kHz for Moog-style range) */
+            float cutoff_hz = 20.0f * powf(900.0f, cutoff_normalized);
 
-            /* Inline single-sample Moog ladder filter */
-            float fc = cutoff_hz / sr;
-            if (fc > 0.49f) fc = 0.49f;
-            if (fc < 0.001f) fc = 0.001f;
-
-            float f = fc * 1.16f;
-            float fb = engine->filter_resonance * (1.0f - 0.15f * f * f);
-
-            float input = sample - engine->filter_prev[4] * fb;
-            input *= 0.35013f * f * f * f * f;
-
-            engine->filter_prev[1] = input + 0.3f * engine->filter_prev[0] + (1.0f - f) * engine->filter_prev[1];
-            engine->filter_prev[0] = input;
-            engine->filter_prev[2] = engine->filter_prev[1] + 0.3f * engine->filter_prev[1] + (1.0f - f) * engine->filter_prev[2];
-            engine->filter_prev[3] = engine->filter_prev[2] + 0.3f * engine->filter_prev[2] + (1.0f - f) * engine->filter_prev[3];
-            engine->filter_prev[4] = engine->filter_prev[3] + 0.3f * engine->filter_prev[3] + (1.0f - f) * engine->filter_prev[4];
-
-            /* Clamp to prevent blowup */
-            if (engine->filter_prev[4] > 4.0f) engine->filter_prev[4] = 4.0f;
-            if (engine->filter_prev[4] < -4.0f) engine->filter_prev[4] = -4.0f;
-
-            sample = engine->filter_prev[4];
+            /* Update filter coefficients and process */
+            huovilainen_set_cutoff(engine, cutoff_hz);
+            huovilainen_set_resonance(engine, engine->filter_resonance);
+            sample = huovilainen_process_sample(engine, sample);
         }
 
         output[i] = sample * engine->master_volume;

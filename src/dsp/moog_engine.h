@@ -38,12 +38,12 @@ typedef struct moog_key_node {
     struct moog_key_node *next;
 } moog_key_node_t;
 
-/* Oscillator waveform types */
+/* Oscillator waveform types - matches original RaffoSynth order */
 typedef enum {
-    WAVE_TRIANGLE = 0,
-    WAVE_SAWTOOTH,
-    WAVE_SQUARE,
-    WAVE_PULSE,
+    WAVE_TRIANGLE = 0,  /* triangular */
+    WAVE_SAWTOOTH,      /* sierra (sawtooth) */
+    WAVE_SQUARE,        /* cuadrada (square) */
+    WAVE_PULSE,         /* pulso (pulse) */
     WAVE_COUNT
 } moog_wave_t;
 
@@ -113,8 +113,14 @@ typedef struct {
     float filt_env_release_level; /* Level captured at release start */
     double filt_env_counter;
 
-    /* Internal state - filter */
-    float filter_prev[6];         /* Filter state variables */
+    /* Internal state - Simplified Moog ladder filter */
+    double filter_stage[4];       /* Four cascaded filter stages */
+    double filter_stageZ1[4];     /* Previous stage values (z^-1) */
+    double filter_stageTanh[3];   /* Cached tanh values */
+    double filter_output;         /* Filter output */
+    double filter_g;              /* Cutoff coefficient */
+    double filter_h;              /* Integration coefficient */
+    double filter_h0;             /* Integration coefficient */
 
     /* Internal state - noise */
     uint32_t noise_seed;          /* LFSR noise state */
