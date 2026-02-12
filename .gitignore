@@ -3,3 +3,4 @@ dist/
 *.o
 *.so
 *.tar.gz
+.DS_Store
