@@ -21,7 +21,160 @@
       "levels": {
         "root": {
           "name": "RaffoSynth",
-          "params": ["preset", "cutoff", "resonance", "contour", "attack", "decay", "sustain", "release", "glide", "osc1_wave", "osc2_wave", "osc2_detune", "noise"],
+          "params": [
+            {
+              "key": "preset",
+              "label": "Preset",
+              "type": "int",
+              "min": 0,
+              "max_param": "preset_count",
+              "default": 0
+            },
+            {
+              "key": "cutoff",
+              "label": "Cutoff",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.7,
+              "step": 0.02,
+              "unit": "%"
+            },
+            {
+              "key": "resonance",
+              "label": "Resonance",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.2,
+              "step": 0.02,
+              "unit": "%"
+            },
+            {
+              "key": "contour",
+              "label": "Contour",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.3,
+              "step": 0.02,
+              "unit": "%"
+            },
+            {
+              "key": "attack",
+              "label": "Attack",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.01,
+              "step": 0.02,
+              "unit": "%"
+            },
+            {
+              "key": "decay",
+              "label": "Decay",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.3,
+              "step": 0.02,
+              "unit": "%"
+            },
+            {
+              "key": "sustain",
+              "label": "Sustain",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.7,
+              "step": 0.02,
+              "unit": "%"
+            },
+            {
+              "key": "release",
+              "label": "Release",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.2,
+              "step": 0.02,
+              "unit": "%"
+            },
+            {
+              "key": "glide",
+              "label": "Glide",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.0,
+              "step": 0.02,
+              "unit": "%"
+            },
+            {
+              "key": "osc1_wave",
+              "label": "Osc1 Wave",
+              "type": "enum",
+              "options": ["Triangle", "Sawtooth", "Square", "Pulse"],
+              "default": 0
+            },
+            {
+              "key": "osc2_wave",
+              "label": "Osc2 Wave",
+              "type": "enum",
+              "options": ["Triangle", "Sawtooth", "Square", "Pulse"],
+              "default": 0
+            },
+            {
+              "key": "osc2_detune",
+              "label": "Osc2 Detune",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.5,
+              "step": 0.02,
+              "unit": "%"
+            },
+            {
+              "key": "noise",
+              "label": "Noise",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.0,
+              "step": 0.02,
+              "unit": "%"
+            },
+            {
+              "key": "osc1_volume",
+              "label": "Osc1 Vol",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.8,
+              "step": 0.02,
+              "unit": "%"
+            },
+            {
+              "key": "osc2_volume",
+              "label": "Osc2 Vol",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.0,
+              "step": 0.02,
+              "unit": "%"
+            },
+            {
+              "key": "osc3_volume",
+              "label": "Osc3 Vol",
+              "type": "float",
+              "min": 0.0,
+              "max": 1.0,
+              "default": 0.0,
+              "step": 0.02,
+              "unit": "%"
+            }
+          ],
           "knobs": ["cutoff", "resonance", "contour", "attack", "decay", "sustain", "release", "glide"]
         }
       }
