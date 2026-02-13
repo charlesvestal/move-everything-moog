@@ -210,12 +210,12 @@ struct MoogPreset {
  *                                          Total: 37 (P_COUNT)
  */
 static const MoogPreset g_factory_presets[] = {
-    /* 0: Init - waveform values: 0=tri, 1=saw, 2=sq, 3=pulse (matches original RaffoSynth) */
+    /* 0: Init */
     {"Init", {
-        1, 0.7f, -1,  /* osc1: saw, vol, range */
-        1, 0.5f, -1, 0.48f,  /* osc2: saw, vol, range, detune */
-        1, 0.4f, -2, 0.52f,  /* osc3: saw, vol, range, detune */
-        0, 0.0f, 0, 0.5f,  /* osc4: tri, off */
+        1, 0.7f, -1,  /* osc1: wave, vol, range */
+        1, 0.5f, -1, 0.48f,  /* osc2: wave, vol, range, detune */
+        1, 0.4f, -2, 0.52f,  /* osc3: wave, vol, range, detune */
+        0, 0.0f, 0, 0.5f,  /* osc4: off */
         0.0f,  /* noise */
         0.7f, 0.2f, 0.3f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.01f, 0.3f, 0.7f, 0.2f,  /* amp: A, D, S, R */
@@ -226,10 +226,10 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 1: Soloist - single bright saw */
     {"Soloist", {
-        1, 0.7f, -1,  /* osc1: saw, vol, range */
-        0, 0.0f, 0, 0.64f,  /* osc2: tri, off */
-        1, 0.0f, -1, 0.5f,  /* osc3: saw, off */
-        0, 0.0f, -2, 0.66f,  /* osc4: tri, off */
+        1, 0.7f, -1,  /* osc1: wave, vol, range */
+        0, 0.0f, 0, 0.64f,  /* osc2: off */
+        1, 0.0f, -1, 0.5f,  /* osc3: off */
+        0, 0.0f, -2, 0.66f,  /* osc4: off */
         0.0f,  /* noise */
         0.886f, 1.0f, 0.5f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.027f, 0.301f, 0.723f, 0.282f,  /* amp: A, D, S, R */
@@ -240,10 +240,10 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 2: Duet - saw + triangle */
     {"Duet", {
-        1, 0.7f, -1,  /* osc1: saw, vol, range */
-        0, 0.863f, 0, 0.64f,  /* osc2: tri, vol, range, detune */
-        1, 0.0f, -1, 0.5f,  /* osc3: saw, off */
-        0, 0.0f, -2, 0.66f,  /* osc4: tri, off */
+        1, 0.7f, -1,  /* osc1: wave, vol, range */
+        0, 0.863f, 0, 0.64f,  /* osc2: wave, vol, range, detune */
+        1, 0.0f, -1, 0.5f,  /* osc3: off */
+        0, 0.0f, -2, 0.66f,  /* osc4: off */
         0.0f,  /* noise */
         0.886f, 1.0f, 0.5f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.027f, 0.301f, 0.723f, 0.282f,  /* amp: A, D, S, R */
@@ -254,10 +254,10 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 3: Trio - saw + triangle + square */
     {"Trio", {
-        1, 0.7f, 0,  /* osc1: saw, vol, range */
-        0, 0.863f, 1, 0.64f,  /* osc2: tri, vol, range, detune */
-        2, 0.151f, -1, 0.5f,  /* osc3: sq, vol, range, detune */
-        0, 0.0f, -2, 0.66f,  /* osc4: tri, off */
+        1, 0.7f, 0,  /* osc1: wave, vol, range */
+        0, 0.863f, 1, 0.64f,  /* osc2: wave, vol, range, detune */
+        2, 0.151f, -1, 0.5f,  /* osc3: wave, vol, range, detune */
+        0, 0.0f, -2, 0.66f,  /* osc4: off */
         0.0f,  /* noise */
         0.886f, 0.014f, 0.5f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.027f, 0.301f, 0.723f, 0.282f,  /* amp: A, D, S, R */
@@ -268,9 +268,9 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 4: Quartet - all four oscillators */
     {"Quartet", {
-        1, 0.7f, 0,  /* osc1: saw, vol, range */
-        0, 0.863f, 1, 0.64f,  /* osc2: tri, vol, range, detune */
-        2, 0.151f, -1, 0.5f,  /* osc3: sq, vol, range, detune */
+        1, 0.7f, 0,  /* osc1: wave, vol, range */
+        0, 0.863f, 1, 0.64f,  /* osc2: wave, vol, range, detune */
+        2, 0.151f, -1, 0.5f,  /* osc3: wave, vol, range, detune */
         3, 0.466f, 1, 0.66f,  /* osc4: pulse, vol, range, detune */
         0.0f,  /* noise */
         0.886f, 0.014f, 0.5f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
@@ -282,10 +282,10 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 5: SonataFlair - detuned three-saw, dark filter */
     {"SonataFlair", {
-        1, 0.904f, -1,  /* osc1: saw, vol, range */
-        1, 0.644f, -1, 0.32f,  /* osc2: saw, vol, range, detune */
-        1, 0.795f, -1, 0.5f,  /* osc3: saw, vol, range, detune */
-        0, 0.0f, -2, 0.34f,  /* osc4: tri, off */
+        1, 0.904f, -1,  /* osc1: wave, vol, range */
+        1, 0.644f, -1, 0.32f,  /* osc2: wave, vol, range, detune */
+        1, 0.795f, -1, 0.5f,  /* osc3: wave, vol, range, detune */
+        0, 0.0f, -2, 0.34f,  /* osc4: off */
         0.0f,  /* noise */
         0.527f, 0.521f, 0.5f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.027f, 0.301f, 0.723f, 0.282f,  /* amp: A, D, S, R */
@@ -296,10 +296,10 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 6: SonataFlairSub - SonataFlair with sub oscillator */
     {"SonataFlairSub", {
-        1, 0.904f, -1,  /* osc1: saw, vol, range */
-        1, 0.644f, -1, 0.32f,  /* osc2: saw, vol, range, detune */
-        1, 0.795f, -1, 0.5f,  /* osc3: saw, vol, range, detune */
-        1, 0.767f, -2, 0.34f,  /* osc4: saw sub, vol, range, detune */
+        1, 0.904f, -1,  /* osc1: wave, vol, range */
+        1, 0.644f, -1, 0.32f,  /* osc2: wave, vol, range, detune */
+        1, 0.795f, -1, 0.5f,  /* osc3: wave, vol, range, detune */
+        1, 0.767f, -2, 0.34f,  /* osc4: saw, vol, range, detune */
         0.0f,  /* noise */
         0.527f, 0.521f, 0.5f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.027f, 0.301f, 0.723f, 0.282f,  /* amp: A, D, S, R */
@@ -310,10 +310,10 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 7: AngrySweep - resonant filter sweep */
     {"AngrySweep", {
-        1, 0.7f, -1,  /* osc1: saw, vol, range */
-        2, 0.644f, -1, 0.32f,  /* osc2: sq, vol, range, detune */
-        1, 0.795f, -1, 0.18f,  /* osc3: saw, vol, range, detune */
-        0, 0.0f, -2, 0.34f,  /* osc4: tri, off */
+        1, 0.7f, -1,  /* osc1: wave, vol, range */
+        2, 0.644f, -1, 0.32f,  /* osc2: wave, vol, range, detune */
+        1, 0.795f, -1, 0.18f,  /* osc3: wave, vol, range, detune */
+        0, 0.0f, -2, 0.34f,  /* osc4: off */
         0.0f,  /* noise */
         0.629f, 1.0f, 0.5f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.027f, 0.301f, 0.723f, 0.282f,  /* amp: A, D, S, R */
@@ -324,10 +324,10 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 8: SquarePulse - pulse + square, resonant */
     {"SquarePulse", {
-        3, 0.7f, -1,  /* osc1: pulse, vol, range */
-        2, 0.644f, -1, 0.64f,  /* osc2: sq, vol, range, detune */
-        1, 0.0f, -1, 0.5f,  /* osc3: saw, off */
-        0, 0.0f, -2, 0.66f,  /* osc4: tri, off */
+        3, 0.7f, -1,  /* osc1: wave, vol, range */
+        2, 0.644f, -1, 0.64f,  /* osc2: wave, vol, range, detune */
+        1, 0.0f, -1, 0.5f,  /* osc3: off */
+        0, 0.0f, -2, 0.66f,  /* osc4: off */
         0.0f,  /* noise */
         0.704f, 0.973f, 0.5f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.027f, 0.301f, 0.723f, 0.282f,  /* amp: A, D, S, R */
@@ -338,10 +338,10 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 9: Whisper - soft resonant three-osc */
     {"Whisper", {
-        1, 0.7f, -1,  /* osc1: saw, vol, range */
-        2, 0.644f, -1, 0.32f,  /* osc2: sq, vol, range, detune */
-        1, 0.795f, -1, 0.18f,  /* osc3: saw, vol, range, detune */
-        0, 0.0f, -2, 0.34f,  /* osc4: tri, off */
+        1, 0.7f, -1,  /* osc1: wave, vol, range */
+        2, 0.644f, -1, 0.32f,  /* osc2: wave, vol, range, detune */
+        1, 0.795f, -1, 0.18f,  /* osc3: wave, vol, range, detune */
+        0, 0.0f, -2, 0.34f,  /* osc4: off */
         0.0f,  /* noise */
         0.718f, 1.0f, 0.5f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.027f, 0.301f, 0.723f, 0.282f,  /* amp: A, D, S, R */
@@ -352,10 +352,10 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 10: CookedPasta - percussive pulses */
     {"CookedPasta", {
-        3, 0.7f, -1,  /* osc1: pulse, vol, range */
-        3, 0.644f, -1, 1.0f,  /* osc2: pulse, vol, range, detune */
-        0, 0.795f, 1, 1.0f,  /* osc3: tri, vol, range, detune */
-        0, 0.0f, -2, 1.0f,  /* osc4: tri, off, detune clamped */
+        3, 0.7f, -1,  /* osc1: wave, vol, range */
+        3, 0.644f, -1, 1.0f,  /* osc2: wave, vol, range, detune */
+        0, 0.795f, 1, 1.0f,  /* osc3: wave, vol, range, detune */
+        0, 0.0f, -2, 1.0f,  /* osc4: off, detune clamped */
         0.0f,  /* noise */
         0.73f, 0.849f, 0.5f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.027f, 0.528f, 0.0f, 0.374f,  /* amp: A, D, S, R */
@@ -366,10 +366,10 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 11: CookedPasta2 - sustained pulses */
     {"CookedPasta2", {
-        3, 0.699f, -1,  /* osc1: pulse, vol, range */
-        3, 0.644f, -1, 1.0f,  /* osc2: pulse, vol, range, detune */
-        0, 0.795f, 1, 1.0f,  /* osc3: tri, vol, range, detune */
-        0, 0.0f, -2, 1.0f,  /* osc4: tri, off, detune clamped */
+        3, 0.699f, -1,  /* osc1: wave, vol, range */
+        3, 0.644f, -1, 1.0f,  /* osc2: wave, vol, range, detune */
+        0, 0.795f, 1, 1.0f,  /* osc3: wave, vol, range, detune */
+        0, 0.0f, -2, 1.0f,  /* osc4: off, detune clamped */
         0.0f,  /* noise */
         0.73f, 0.849f, 0.5f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.027f, 0.528f, 0.41f, 0.374f,  /* amp: A, D, S, R */
@@ -380,10 +380,10 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 12: Classic Bass */
     {"Classic Bass", {
-        1, 0.9f, -1,  /* osc1: saw, vol, range */
-        1, 0.7f, -1, 0.53f,  /* osc2: saw, vol, range, detune */
-        0, 0.0f, 0, 0.5f,  /* osc3: tri, off */
-        0, 0.0f, 0, 0.5f,  /* osc4: tri, off */
+        1, 0.9f, -1,  /* osc1: wave, vol, range */
+        1, 0.7f, -1, 0.53f,  /* osc2: wave, vol, range, detune */
+        0, 0.0f, 0, 0.5f,  /* osc3: off */
+        0, 0.0f, 0, 0.5f,  /* osc4: off */
         0.0f,  /* noise */
         0.35f, 0.5f, 0.6f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.0f, 0.2f, 0.7f, 0.1f,  /* amp: A, D, S, R */
@@ -394,10 +394,10 @@ static const MoogPreset g_factory_presets[] = {
     }},
     /* 13: Sub Bass */
     {"Sub Bass", {
-        0, 0.9f, -2,  /* osc1: tri, vol, range */
-        1, 0.25f, -1, 0.5f,  /* osc2: saw, vol, range, detune */
-        0, 0.0f, 0, 0.5f,  /* osc3: tri, off */
-        0, 0.0f, 0, 0.5f,  /* osc4: tri, off */
+        0, 0.9f, -2,  /* osc1: wave, vol, range */
+        1, 0.25f, -1, 0.5f,  /* osc2: wave, vol, range, detune */
+        0, 0.0f, 0, 0.5f,  /* osc3: off */
+        0, 0.0f, 0, 0.5f,  /* osc4: off */
         0.0f,  /* noise */
         0.25f, 0.0f, 0.3f, 0.0f,  /* filter: cutoff, reso, contour, key_follow */
         0.0f, 0.4f, 0.9f, 0.2f,  /* amp: A, D, S, R */
@@ -625,7 +625,7 @@ static void v2_set_param(void *instance, const char *key, const char *val) {
 
     if (strcmp(key, "preset") == 0) {
         int idx = atoi(val);
-        if (idx >= 0 && idx < inst->preset_count && idx != inst->current_preset) {
+        if (idx >= 0 && idx < inst->preset_count) {
             apply_preset(inst, idx);
         }
     }
