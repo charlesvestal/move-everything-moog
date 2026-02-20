@@ -1,4 +1,4 @@
-# RaffoSynth for Move Anything
+# RaffoSynth for Move Everything
 
 Monophonic synthesizer module based on [RaffoSynth](https://github.com/nicoroulet/RaffoSynth) by Nicolas Roulet and Julian Palladino.
 
@@ -20,14 +20,14 @@ Features 4 oscillators, a Moog-style ladder filter, and dual ADSR envelopes.
 
 ## Prerequisites
 
-- [Move Anything](https://github.com/charlesvestal/move-anything) installed on your Ableton Move
+- [Move Everything](https://github.com/charlesvestal/move-anything) installed on your Ableton Move
 - SSH access enabled: http://move.local/development/ssh
 
 ## Install
 
 ### Via Module Store (Recommended)
 
-1. Launch Move Anything on your Move
+1. Launch Move Everything on your Move
 2. Select **Module Store** from the main menu
 3. Navigate to **Sound Generators** → **RaffoSynth**
 4. Select **Install**
@@ -124,3 +124,10 @@ In Shadow UI / Signal Chain, parameters are organized into navigable categories.
 MIT License - See [LICENSE](LICENSE)
 
 Based on RaffoSynth by Nicolas Roulet and Julian Palladino.
+
+## AI Assistance Disclaimer
+
+This module is part of Move Everything and was developed with AI assistance, including Claude, Codex, and other AI assistants.
+
+All architecture, implementation, and release decisions are reviewed by human maintainers.  
+AI-assisted content may still contain errors, so please validate functionality, security, and license compatibility before production use.
